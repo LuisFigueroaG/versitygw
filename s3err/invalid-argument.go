@@ -75,12 +75,17 @@ const (
 	InvalidArgSSECRequiresTLS
 	InvalidArgUploadIdWithUploads
 	InvalidArgBucketRegionEndpoint
+	InvalidArgStartAfterWithoutListType2
 )
 
 var invalidArgErrResponses = map[InvalidArgErrorCode]InvalidArgumentError{
 	InvalidArgBucketRegionEndpoint: {
 		Description:  "Requests with bucket-region specified must be made to the corresponding regional endpoint",
 		ArgumentName: "bucket-region",
+	},
+	InvalidArgStartAfterWithoutListType2: {
+		Description:  "startAfter only supported in REST.GET.BUCKET with list-type=2",
+		ArgumentName: "start-after",
 	},
 	InvalidArgMaxBuckets: {
 		Description:  "Argument max-buckets must be an integer between 1 and 10000.",

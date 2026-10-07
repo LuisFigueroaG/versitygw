@@ -21,7 +21,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/gofiber/fiber/v3"
 	"github.com/versity/versitygw/auth"
+	"github.com/versity/versitygw/debuglogger"
 	"github.com/versity/versitygw/s3api/utils"
+	"github.com/versity/versitygw/s3err"
 	"github.com/versity/versitygw/s3response"
 )
 
@@ -629,6 +631,17 @@ func (c S3ApiController) ListObjects(ctx fiber.Ctx) (*Response, error) {
 				BucketOwner: parsedAcl.Owner,
 			},
 		}, err
+	}
+
+	// start-after belongs to ListObjectsV2 only: S3 rejects it in a
+	// ListObjects (v1) request rather than ignoring it
+	if ctx.Request().URI().QueryArgs().Has("start-after") {
+		debuglogger.Logf("start-after is not supported in ListObjects v1")
+		return &Response{
+			MetaOpts: &MetaOptions{
+				BucketOwner: parsedAcl.Owner,
+			},
+		}, s3err.GetInvalidArgumentErr(s3err.InvalidArgStartAfterWithoutListType2, "")
 	}
 
 	maxkeys, err := utils.ParseMaxLimiter(maxkeysStr, utils.LimiterTypeMaxKeys)

@@ -1213,6 +1213,40 @@ func TestS3ApiController_ListObjects(t *testing.T) {
 			},
 		},
 		{
+			name: "start-after is not supported",
+			input: testInput{
+				locals: defaultLocals,
+				queries: map[string]string{
+					"start-after": "my-key",
+				},
+			},
+			output: testOutput{
+				response: &Response{
+					MetaOpts: &MetaOptions{
+						BucketOwner: "root",
+					},
+				},
+				err: s3err.GetInvalidArgumentErr(s3err.InvalidArgStartAfterWithoutListType2, ""),
+			},
+		},
+		{
+			name: "empty start-after is not supported",
+			input: testInput{
+				locals: defaultLocals,
+				queries: map[string]string{
+					"start-after": "",
+				},
+			},
+			output: testOutput{
+				response: &Response{
+					MetaOpts: &MetaOptions{
+						BucketOwner: "root",
+					},
+				},
+				err: s3err.GetInvalidArgumentErr(s3err.InvalidArgStartAfterWithoutListType2, ""),
+			},
+		},
+		{
 			name: "backend returns error",
 			input: testInput{
 				locals: defaultLocals,

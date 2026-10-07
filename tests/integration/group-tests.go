@@ -323,6 +323,7 @@ func TestListObjects(ts *TestState) {
 	ts.Run(ListObjects_mp_masking_with_marker)
 	ts.Run(ListObjects_mp_masking_truncation)
 	ts.Run(ListObjects_mp_masking_delimiter)
+	ts.Run(ListObjects_start_after_not_supported)
 	//TODO: remove the condition after implementing checksums in azure
 	if !ts.conf.azureTests {
 		ts.Run(ListObjects_with_checksum)
@@ -3125,6 +3126,7 @@ func GetIntTests() IntTests {
 		"ListObjects_mp_masking_with_marker":                                               ListObjects_mp_masking_with_marker,
 		"ListObjects_mp_masking_truncation":                                                ListObjects_mp_masking_truncation,
 		"ListObjects_mp_masking_delimiter":                                                 ListObjects_mp_masking_delimiter,
+		"ListObjects_start_after_not_supported":                                            ListObjects_start_after_not_supported,
 		"ListObjectsV2_non_truncated_common_prefixes":                                      ListObjectsV2_non_truncated_common_prefixes,
 		"ListObjectsV2_invalid_parent_prefix":                                              ListObjectsV2_invalid_parent_prefix,
 		"ListObjectsV2_should_not_list_pending_mps":                                        ListObjectsV2_should_not_list_pending_mps,

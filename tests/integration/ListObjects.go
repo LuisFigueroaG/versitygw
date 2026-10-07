@@ -17,6 +17,8 @@ package integration
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
@@ -790,5 +792,31 @@ func ListObjects_mp_masking_delimiter(s *S3Conf) error {
 		}
 
 		return nil
+	})
+}
+
+func ListObjects_start_after_not_supported(s *S3Conf) error {
+	testName := "ListObjects_start_after_not_supported"
+	return actionHandler(s, testName, func(s3client *s3.Client, bucket string) error {
+		_, err := putObjects(s3client, []string{"bar", "foo"}, bucket)
+		if err != nil {
+			return err
+		}
+
+		// ListObjectsInput has no StartAfter, so the request is signed
+		// and sent by hand
+		req, err := createSignedReq(http.MethodGet, s.endpoint,
+			fmt.Sprintf("%v?start-after=bar", bucket),
+			s.awsID, s.awsSecret, "s3", s.awsRegion, "", nil, time.Now(), nil)
+		if err != nil {
+			return err
+		}
+
+		resp, err := s.httpClient.Do(req)
+		if err != nil {
+			return err
+		}
+
+		return checkHTTPResponseApiErr(resp, s3err.GetInvalidArgumentErr(s3err.InvalidArgStartAfterWithoutListType2, ""))
 	})
 }
